@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2026新年祝福 | 奔赴美好</title>
     <style>
-        /* 引入手写风格字体 */
         @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap');
         
         * {
@@ -32,7 +31,6 @@
             position: relative;
         }
 
-        /* 卡通贴纸样式 - 浮动动画+hover效果 */
         .cartoon-item {
             position: absolute;
             z-index: 5;
@@ -49,7 +47,6 @@
             0% { transform: translateY(0); }
             100% { transform: translateY(-15px); }
         }
-        /* 6个卡通贴纸位置定位 */
         .cartoon-1 {
             top: 60px;
             left: 60px;
@@ -89,7 +86,6 @@
             animation-delay: 2.5s;
         }
 
-        /* 主页面核心容器样式 - 磨砂玻璃+金色边框 */
         .container {
             background: rgba(255, 255, 255, 0.65);
             backdrop-filter: blur(8px);
@@ -112,7 +108,6 @@
             100% { opacity: 1; }
         }
 
-        /* 主标题文字样式 */
         .title {
             font-size: 36px;
             color: #a70f24;
@@ -122,7 +117,6 @@
             letter-spacing: 2px;
         }
 
-        /* 按钮容器 */
         .btn-group {
             display: flex;
             gap: 40px;
@@ -130,7 +124,6 @@
             flex-wrap: wrap;
         }
 
-        /* 通用按钮样式 - 渐变红+金色边框+点击效果 */
         .btn {
             padding: 20px 50px;
             font-size: 26px;
@@ -139,7 +132,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             color: white;
-            min-width: 200px;
+            min-width: 200;
             font-family: 'Ma Shan Zheng', cursive;
             background: linear-gradient(90deg, #c8102e 0%, #d1213b 100%);
             border: 4px solid #e8c850;
@@ -161,7 +154,6 @@
                 0 5px 10px rgba(0,0,0,0.08);
         }
 
-        /* 「我才不要」弹窗样式 - 磨砂玻璃+淡入淡出 */
         .modal {
             position: fixed;
             top: 0;
@@ -202,7 +194,6 @@
             text-shadow: 2px 2px 3px rgba(0,0,0,0.08);
         }
 
-        /* 页面淡出动画（卡通图片跳转用） */
         body.fade-out {
             opacity: 0;
             transform: scale(0.98);
@@ -210,7 +201,6 @@
     </style>
 </head>
 <body>
-    <!-- 6个卡通贴纸 - 分别跳转到page1-page6.html -->
     <img src="1.png" class="cartoon-item cartoon-1" alt="卡通元素1" onclick="navigateTo('page1.html')">
     <img src="2.png" class="cartoon-item cartoon-2" alt="卡通元素2" onclick="navigateTo('page2.html')">
     <img src="3.png" class="cartoon-item cartoon-3" alt="卡通元素3" onclick="navigateTo('page3.html')">
@@ -218,18 +208,14 @@
     <img src="5.png" class="cartoon-item cartoon-5" alt="卡通元素5" onclick="navigateTo('page5.html')">
     <img src="微信图片_20260201003432_540_2.png" class="cartoon-item cartoon-6" alt="卡通元素6" onclick="navigateTo('page6.html')">
 
-    <!-- 主页面核心内容 - 标题+两个按钮 -->
     <div class="container">
         <div class="title">2025年结束啦！<br>你想和我一起奔赴2026嘛？</div>
         <div class="btn-group">
-            <!-- 那还用说：直接跳转独立登录页login.html -->
             <button class="btn btn-yes" onclick="window.location.href='login.html'">那还用说</button>
-            <!-- 我才不要：触发弹窗逻辑 -->
             <button class="btn btn-no" onclick="handleNoClick()">我才不要！</button>
         </div>
     </div>
 
-    <!-- 「我才不要」弹窗容器（默认隐藏） -->
     <div class="modal" id="noModal">
         <div class="modal-content">
             <p class="modal-text" id="modalText">你确定？</p>
@@ -238,13 +224,10 @@
     </div>
 
     <script>
-        // 初始化「我才不要」点击次数（刷新页面自动重置）
         let noClickCount = 0;
-        // 获取弹窗元素
         const modal = document.getElementById('noModal');
         const modalText = document.getElementById('modalText');
 
-        // 卡通图片跳转方法 - 带淡出动画
         function navigateTo(url) {
             document.body.classList.add('fade-out');
             setTimeout(() => {
@@ -252,10 +235,8 @@
             }, 500);
         }
 
-        // 「我才不要」点击逻辑 - 3次及以上固定显示gun🫶
         function handleNoClick() {
             noClickCount++;
-            // 根据点击次数切换弹窗文本
             if (noClickCount === 1) {
                 modalText.textContent = '你确定？';
             } else if (noClickCount === 2) {
@@ -263,16 +244,13 @@
             } else if (noClickCount >= 3) {
                 modalText.textContent = 'gun🫶';
             }
-            // 显示弹窗
             modal.classList.add('active');
         }
 
-        // 关闭「我才不要」弹窗
         function closeModal() {
             modal.classList.remove('active');
         }
 
-        // 页面加载初始化 - 重置点击次数+移除淡出动画
         window.onload = function() {
             document.body.classList.remove('fade-out');
             noClickCount = 0;
