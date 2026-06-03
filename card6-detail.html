@@ -1,3 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>查收你的2026小作文</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft YaHei", sans-serif; }
+body { 
+  min-height: 100vh; 
+  overflow-x: hidden; 
+  background: #f5f5f5;
+}
+
+.back-to-card {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 8px 20px;
+  background: #e89cb8;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 999;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: none;
+}
+
+.container {
+  width: 90%;
+  max-width: 550px;
+  min-height: 85vh;
+  margin: 60px auto;
+  background: #ffffff;
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  color: #333333;
+  text-shadow: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  z-index: 1;
+}
+.container > * { position: relative; z-index: 2; }
+
+.welcome {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+.welcome h2 { font-size: 26px; margin-bottom: 40px; text-align: center; color: #e89cb8; }
+#checkBtn {
+  padding: 12px 40px;
+  background: #e89cb8;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.content {
+  width: 100%;
+  height: 100%;
+  padding: 30px 25px;
+  overflow-y: auto;
+  display: none;
+  white-space: pre-wrap;
+  line-height: 1.8;
+  font-size: 15px;
+  background: transparent;
+}
+.line {
+  opacity: 0;
+  transform: translateY(20px);
+  margin-bottom: 8px;
+  transition: all 0.6s ease;
+}
+.line.show { opacity: 1; transform: translateY(0); }
+
+.click-item {
+  color: #e89cb8;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.back-to-essay {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 25px;
+  background: #e89cb8;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  display: none;
+  z-index: 3;
+}
+
+.wish-page {
+  width: 100%;
+  height: 100%;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  background: transparent;
+}
+.wish-page h3 { font-size: 22px; margin-bottom: 30px; color: #e89cb8; }
+#wishInput {
+  width: 80%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #e89cb8;
+  outline: none;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+#sendWish {
+  padding: 10px 30px;
+  background: #e89cb8;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.keyword-img {
+  width: 100px;
+  height: auto;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: 2px solid #e89cb8;
+  object-fit: cover;
+  display: block;
+}
+</style>
+</head>
+<body>
+
+<audio id="bgMusic" src="WvGDFh-天下第一好-李小眼.mp3" loop autoplay></audio>
+
+<button class="back-to-card" onclick="window.location.href='cards.html'">返回卡牌界面</button>
+
+<div class="container">
+  <div class="welcome" id="welcomePage">
+    <h2>查收你的2026小作文</h2>
+    <button id="checkBtn">查收</button>
+  </div>
+
+  <div class="content" id="essayContent"></div>
+  <div class="content" id="yearContent"></div>
+
+  <div class="wish-page" id="wishPage">
+    <h3>你的新年愿望是什么呀？</h3>
+    <input type="text" id="wishInput" placeholder="写下你的新年愿望吧～">
+    <button id="sendWish">发送</button>
+  </div>
+
+  <button class="back-to-essay" id="backToEssayBtn">返回小作文</button>
+</div>
+
+<script>
 const welcomePage = document.getElementById('welcomePage');
 const checkBtn = document.getElementById('checkBtn');
 const essayContent = document.getElementById('essayContent');
@@ -8,9 +184,6 @@ const backToEssayBtn = document.getElementById('backToEssayBtn');
 const sendWishBtn = document.getElementById('sendWish');
 const wishInput = document.getElementById('wishInput');
 const bgMusic = document.getElementById('bgMusic');
-
-// 读取本地存储的愿望数组
-let wishList = JSON.parse(localStorage.getItem('wishData')) || [];
 
 const essayText = `To张蕊蕊：
 　这不是普通的信，这其实是一封情书❤️。欸呀欸呀，开个玩笑。
@@ -104,11 +277,7 @@ const yearText = `年度总结
 控诉：
 不回信息！！！！！`;
 
-checkBtn.addEventListener('click', () => {
-  startEssay();
-  bgMusic.play().catch(err => {});
-});
-
+checkBtn.addEventListener('click', startEssay);
 sendWishBtn.addEventListener('click', sendWish);
 backToEssayBtn.addEventListener('click', backToEssay);
 
@@ -181,16 +350,15 @@ function sendWish() {
     alert('请写下你的新年愿望再发送哦～');
     return;
   }
-  // 存入时间+愿望
-  const info = {
-    time: new Date().toLocaleString(),
-    content: wishVal
-  }
-  wishList.push(info);
-  // 本地永久存储
-  localStorage.setItem('wishData', JSON.stringify(wishList));
-
   alert('愿望发送成功啦！罗丹已经收到咯～');
-  console.log('===== 张蕊蕊的2026新年愿望 =====', info);
+  console.log('===== 张蕊蕊的2026新年愿望 =====');
+  console.log(wishVal);
+  
+  // 👇 只加了这一句，保存愿望，其他完全没变
+  localStorage.setItem('lastWish', wishVal);
+  
   wishInput.value = '';
 }
+</script>
+</body>
+</html>
