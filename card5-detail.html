@@ -8,8 +8,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            /* 保留虚化背景图 */
-            background: url("D:/website/image/微信图片_20260201011724_549_2.jpg") no-repeat center center fixed;
+            background: url("微信图片_20260201011724_549_2.jpg") no-repeat center center fixed;
             background-size: cover;
             position: relative;
             min-height: 100vh;
@@ -32,7 +31,6 @@
             z-index: -1;
         }
 
-        /* 文本框样式 - 保留浮现动画 */
         .text-box {
             font-size: 36px;
             color: #a70f24;
@@ -52,7 +50,6 @@
             transform: translateY(0);
         }
 
-        /* 图片展示容器 - 保留浮现逻辑 */
         .image-container {
             width: 300px;
             height: 400px;
@@ -69,7 +66,6 @@
             opacity: 1;
         }
 
-        /* 成长图片样式 */
         .milk-tea-img {
             width: 100%;
             height: 100%;
@@ -84,11 +80,10 @@
             opacity: 1;
         }
 
-        /* 返回按钮样式 - 100%匹配卡牌5标准色#477B97 */
         .back-btn {
             padding: 15px 40px;
-            background: #477B97; /* 卡牌5主色 */
-            color: #FFFFFF;      /* 白色文字更适配主色，视觉统一 */
+            background: #477B97;
+            color: #FFFFFF;
             border: none;
             border-radius: 30px;
             font-family: 'Ma Shan Zheng', cursive;
@@ -100,58 +95,38 @@
             z-index: 1;
         }
         .back-btn:hover {
-            background: #396780; /* 卡牌5主色加深色，hover更自然 */
+            background: #396780;
             transform: translateY(-3px);
         }
 
-        /* 适配移动端 */
         @media (max-width: 768px) {
-            .text-box {
-                font-size: 28px;
-            }
-            .image-container {
-                width: 250px;
-                height: 350px;
-            }
-            .back-btn {
-                font-size: 24px;
-                padding: 12px 30px;
-            }
-            body::before {
-                backdrop-filter: blur(5px);
-            }
+            .text-box { font-size: 28px; }
+            .image-container { width: 250px; height: 350px; }
+            .back-btn { font-size: 24px; padding: 12px 30px; }
+            body::before { backdrop-filter: blur(5px); }
         }
     </style>
 </head>
 <body>
-    <!-- 文本显示框 - 保留指定文字 -->
     <div class="text-box" id="textBox">瞅瞅这小眼睛😏</div>
-
-    <!-- 图片展示容器 -->
     <div class="image-container" id="imageContainer"></div>
-
-    <!-- 返回按钮 -->
     <button class="back-btn" id="backBtn" onclick="window.location.href='cards.html'">返回</button>
 
     <script>
-        // 保留你指定的最新图片路径列表
         const milkTeaImages = [
-            "D:/website/photo/微信图片_20260214215131_1242_2.jpg",
-            "D:/website/photo/微信图片_20260214201322_1216_2.jpg",
-            "D:/website/photo/微信图片_20260214215118_1241_2.jpg",
-            "D:/website/photo/微信图片_20260214215144_1243_2.jpg",
-            "D:/website/photo/微信图片_20260214201325_1219_2.jpg"
+            "微信图片_20260214215131_1242_2.jpg",
+            "微信图片_20260214201322_1216_2.jpg",
+            "微信图片_20260214215118_1241_2.jpg",
+            "微信图片_20260214215144_1243_2.jpg",
+            "微信图片_20260214201325_1219_2.jpg"
         ];
 
-        // 获取DOM元素
         const textBox = document.getElementById('textBox');
         const imageContainer = document.getElementById('imageContainer');
         const backBtn = document.getElementById('backBtn');
         
-        // 初始化变量
         let currentIndex = 0;
 
-        // 初始化：创建所有图片元素
         function initImages() {
             milkTeaImages.forEach((imgSrc, index) => {
                 const img = document.createElement('img');
@@ -162,7 +137,6 @@
             });
         }
 
-        // 展示下一张图片 - 保留指定结束文字
         function showNextImage() {
             if (currentIndex >= milkTeaImages.length) {
                 textBox.textContent = `我会永远盯着你😏~~~`;
@@ -178,7 +152,6 @@
             setTimeout(showNextImage, 2000);
         }
 
-        // 页面加载逻辑不变
         window.onload = function() {
             textBox.classList.add('fade-in');
             setTimeout(() => {
