@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翻转卡片 | 烟花庆典</title>
+    <style>
+        /* 复用index背景样式（请确认index.html的背景路径/样式一致） */
+        @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f5f0e6;
+            background-image: url("image/微信图片_20260201011724_549_2.jpg"); /* 与index.html背景一致 */
+            background-blend-mode: overlay;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            font-family: 'Ma Shan Zheng', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            perspective: 1500px; /* 开启3D透视 */
+        }
+
+        /* 卡片容器：网格布局，适配移动端 */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 280px));
+            gap: 30px;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 卡片父容器：控制3D翻转 */
+        .card-wrap {
+            width: 100%;
+            height: 350px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        /* 卡片翻转触发 */
+        .card-wrap.flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* 卡片正面/背面通用样式 */
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; /* 隐藏背面 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+            letter-spacing: 2px;
+            border-radius: 16px;
+        }
+
+        /* 卡片正面：马卡龙色系 */
+        .card1 .card-front { background: #FFC2E2; /* 马卡龙粉 */ }
+        .card2 .card-front { background: #B5EAD7; /* 马卡龙绿 */ }
+        .card3 .card-front { background: #CBCEFB; /* 马卡龙紫 */ }
+        .card4 .card-front { background: #FFDDAF; /* 马卡龙黄 */ }
+        .card5 .card-front { background: #99DDFF; /* 马卡龙蓝 */ }
+        .card6 .card-front { background: #FFB3BA; /* 马卡龙珊瑚红 */ }
+
+        /* 卡片正面文字颜色（对比色） */
+        .card1 .card-front { color: #A74F68; }
+        .card2 .card-front { color: #4F8A6D; }
+        .card3 .card-front { color: #5B5F97; }
+        .card4 .card-front { color: #977947; }
+        .card5 .card-front { color: #477B97; }
+        .card6 .card-front { color: #974751; }
+
+        /* 卡片背面：浅色系，统一样式 */
+        .card-back {
+            background: #fff8e8;
+            color: #a70f24;
+            transform: rotateY(180deg);
+            font-size: 28px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* over按钮样式：马卡龙色系（综合调和色） */
+        .over-btn {
+            margin-top: 60px;
+            padding: 15px 40px;
+            background: linear-gradient(120deg, #FFC2E2, #B5EAD7, #CBCEFB);
+            border: none;
+            border-radius: 50px;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 32px;
+            color: #5B5F97;
+            cursor: pointer;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .over-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+        }
+
+        /* 弹窗遮罩层 */
+        .modal-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        /* 弹窗容器 */
+        .modal-container {
+            background: #fff8e8;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            text-align: center;
+        }
+        /* 弹窗标题 */
+        .modal-title {
+            font-size: 30px;
+            color: #a70f24;
+            margin-bottom: 20px;
+        }
+        /* 输入框样式 */
+        .modal-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #CBCEFB;
+            border-radius: 10px;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 24px;
+            margin-bottom: 20px;
+            resize: none;
+            min-height: 120px;
+        }
+        /* 发送按钮 */
+        .send-btn {
+            padding: 10px 30px;
+            background: #FFDDAF;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 28px;
+            color: #977947;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .send-btn:hover {
+            background: #FFC2E2;
+            color: #A74F68;
+        }
+
+        /* 适配小屏幕 */
+        @media (max-width: 768px) {
+            .card-wrap {
+                height: 300px;
+            }
+            .card-front {
+                font-size: 30px;
+            }
+            .card-back {
+                font-size: 24px;
+            }
+            .over-btn {
+                font-size: 28px;
+                padding: 12px 30px;
+            }
+            .modal-title {
+                font-size: 26px;
+            }
+            .modal-input {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 卡片容器 -->
+    <div class="cards-container">
+        <!-- 卡片1：修改data-url为card1-detail.html -->
+        <div class="card-wrap card1" data-url="card1-detail.html">
+            <div class="card-front">卡片 1</div>
+            <div class="card-back">点击跳转<br>美食回忆录</div>
+        </div>
+        <!-- 卡片2 -->
+        <div class="card-wrap card2" data-url="card2-detail.html">
+            <div class="card-front">卡片 2</div>
+            <div class="card-back">点击跳转<br>十上成长记&&</div>
+        </div>
+        <!-- 卡片3 -->
+        <div class="card-wrap card3" data-url="card3-detail .html">
+            <div class="card-front">卡片 3</div>
+            <div class="card-back">点击跳转<br>奶茶</div>
+        </div>
+        <!-- 卡片4 -->
+        <div class="card-wrap card4" data-url="card4-detail.html">
+            <div class="card-front">卡片 4</div>
+            <div class="card-back">点击跳转<br>帅哥</div>
+        </div>
+        <!-- 卡片5 -->
+        <div class="card-wrap card5" data-url="card5-detail.html">
+            <div class="card-front">卡片 5</div>
+            <div class="card-back">点击跳转<br>眼睛变化史</div>
+        </div>
+        <!-- 新增卡片6 -->
+        <div class="card-wrap card6" data-url="card6-detail.html">
+            <div class="card-front">卡片 6</div>
+            <div class="card-back">点击跳转<br>新年快乐</div>
+        </div>
+    </div>
+
+    <!-- over按钮 -->
+    <button class="over-btn">over</button>
+
+    <!-- 弹窗 -->
+    <div class="modal-mask">
+        <div class="modal-container">
+            <div class="modal-title">告诉我你密码的含义吧？</div>
+            <textarea class="modal-input" placeholder="请输入密码的含义..."></textarea>
+            <button class="send-btn">发送</button>
+        </div>
+    </div>
+
+    <script>
+        // 获取所有卡片
+        const cardWraps = document.querySelectorAll('.card-wrap');
+        // 获取按钮、弹窗、输入框、发送按钮
+        const overBtn = document.querySelector('.over-btn');
+        const modalMask = document.querySelector('.modal-mask');
+        const modalInput = document.querySelector('.modal-input');
+        const sendBtn = document.querySelector('.send-btn');
+
+        // 卡片点击翻转并跳转逻辑
+        cardWraps.forEach(card => {
+            card.addEventListener('click', function() {
+                // 添加翻转类，触发动画
+                this.classList.add('flipped');
+                
+                // 动画结束后跳转（0.8秒后，与CSS动画时长一致）
+                setTimeout(() => {
+                    const targetUrl = this.getAttribute('data-url');
+                    window.location.href = targetUrl;
+                }, 800);
+            });
+        });
+
+        // 点击over按钮显示弹窗
+        overBtn.addEventListener('click', function() {
+            modalMask.style.display = 'flex';
+        });
+
+        // 点击发送按钮处理逻辑
+        sendBtn.addEventListener('click', function() {
+            // 1. 获取输入的密码含义（这里可根据需求发送到服务器/存储，示例仅打印到控制台）
+            const passwordMeaning = modalInput.value.trim();
+            if (passwordMeaning) {
+                console.log('密码的含义：', passwordMeaning); // 你可以在控制台查看，或对接后端接口发送
+                
+                // 2. 跳转到主界面，并传递退出成功的提示
+                const mainUrl = 'D:\\website\\index.html'; // 本地路径，若部署到服务器需改为相对/绝对URL
+                // 用URL参数传递提示信息
+                const redirectUrl = `${mainUrl}?exitTip=张蕊，退出成功！`;
+                window.location.href = redirectUrl;
+            } else {
+                alert('请输入密码的含义后再发送！');
+            }
+        });
+
+        // 可选：点击弹窗遮罩层关闭弹窗（增强体验）
+        modalMask.addEventListener('click', function(e) {
+            if (e.target === modalMask) {
+                modalMask.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

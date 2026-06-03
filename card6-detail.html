@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>查收你的2026小作文</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft YaHei", sans-serif; }
+body { 
+  min-height: 100vh; 
+  overflow-x: hidden; 
+  background: #f5f5f5; /* 页面底层浅灰背景，更干净 */
+}
+
+/* 顶部返回卡牌界面的按钮 */
+.back-to-card {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 8px 20px;
+  background: #e89cb8;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 999;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: none;
+}
+
+/* 核心容器：外层白色框（去掉背景图，仅保留白色样式） */
+.container {
+  width: 90%;
+  max-width: 550px;
+  min-height: 85vh;
+  margin: 60px auto;
+  background: #ffffff; /* 纯白色外层框 */
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  color: #333333; /* 文字改深色，适配纯白背景 */
+  text-shadow: none; /* 取消文字阴影 */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* 轻微阴影，让白色框更立体 */
+  z-index: 1;
+}
+.container > * { position: relative; z-index: 2; }
+
+/* 欢迎页：查收标题+按钮（样式不变） */
+.welcome {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+.welcome h2 { font-size: 26px; margin-bottom: 40px; text-align: center; color: #e89cb8; }
+#checkBtn {
+  padding: 12px 40px;
+  background: #e89cb8;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* 内容通用样式：小框框（样式不变） */
+.content {
+  width: 100%;
+  height: 100%;
+  padding: 30px 25px;
+  overflow-y: auto;
+  display: none;
+  white-space: pre-wrap;
+  line-height: 1.8;
+  font-size: 15px;
+  background: transparent; /* 透明，继承外层白色 */
+}
+/* 逐行浮现动画类（不变） */
+.line {
+  opacity: 0;
+  transform: translateY(20px);
+  margin-bottom: 8px;
+  transition: all 0.6s ease;
+}
+.line.show { opacity: 1; transform: translateY(0); }
+
+/* 可点击的【2025】【许愿】样式（不变） */
+.click-item {
+  color: #e89cb8;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* 年度总结/许愿页的返回小作文按钮（不变） */
+.back-to-essay {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateY(-50%);
+  padding: 8px 25px;
+  background: #e89cb8;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  display: none;
+  z-index: 3;
+}
+
+/* 许愿页样式（不变） */
+.wish-page {
+  width: 100%;
+  height: 100%;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  background: transparent;
+}
+.wish-page h3 { font-size: 22px; margin-bottom: 30px; color: #e89cb8; }
+#wishInput {
+  width: 80%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #e89cb8;
+  outline: none;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+#sendWish {
+  padding: 10px 30px;
+  background: #e89cb8;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* 年度总结图片样式（不变） */
+.keyword-img {
+  width: 100px;
+  height: auto;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: 2px solid #e89cb8;
+  object-fit: cover;
+  display: block;
+}
+</style>
+</head>
+<body>
+<!-- 新增：音频标签 - 背景音乐 -->
+<audio id="bgMusic" src="D:\website\WvGDFh-天下第一好-李小眼.mp3" loop autoplay></audio>
+
+<!-- 返回卡牌界面的按钮 -->
+<button class="back-to-card" onclick="window.location.href='cards.html'">返回卡牌界面</button>
+
+<div class="container">
+  <!-- 欢迎页 -->
+  <div class="welcome" id="welcomePage">
+    <h2>查收你的2026小作文</h2>
+    <button id="checkBtn">查收</button>
+  </div>
+
+  <!-- 小作文内容区 -->
+  <div class="content" id="essayContent"></div>
+
+  <!-- 年度总结内容区 -->
+  <div class="content" id="yearContent"></div>
+
+  <!-- 许愿页 -->
+  <div class="wish-page" id="wishPage">
+    <h3>你的新年愿望是什么呀？</h3>
+    <input type="text" id="wishInput" placeholder="写下你的新年愿望吧～">
+    <button id="sendWish">发送</button>
+  </div>
+
+  <!-- 返回小作文的按钮（年度总结/许愿页共用） -->
+  <button class="back-to-essay" id="backToEssayBtn">返回小作文</button>
+</div>
+
+<script>
+// 所有JS代码完全不变，功能正常
+const welcomePage = document.getElementById('welcomePage');
+const checkBtn = document.getElementById('checkBtn');
+const essayContent = document.getElementById('essayContent');
+const yearContent = document.getElementById('yearContent');
+const wishPage = document.getElementById('wishPage');
+const backToCardBtn = document.querySelector('.back-to-card');
+const backToEssayBtn = document.getElementById('backToEssayBtn');
+const sendWishBtn = document.getElementById('sendWish');
+const wishInput = document.getElementById('wishInput');
+
+// 新增：可选 - 获取音频元素，方便后续控制（如暂停/播放）
+const bgMusic = document.getElementById('bgMusic');
+
+const essayText = `To张蕊蕊：
+　这不是普通的信，这其实是一封情书❤️。欸呀欸呀，开个玩笑。
+　2026，新年快乐呀！张蕊蕊。嗯，此处应该有祝福语的，愿新年胜旧年，愿我们胜旧年。今年是什么年了？马年吗🐎？因为刷视频老是刷到小马呢，马年大吉，祝我们暴富暴富暴富。
+　诶呀，突然想到，刷到的视频，拿英语答题卡写信的，就那个背面写作文的地方划了横线，评论区说你的朋友是李华吗。之前应该是跟你说过，我觉得有些软件很有仪式感吧，有那种年度总结报告，现在应该有蛮多软件都有了，哎，那么智能的我就小小帮你总结一下2025吧。
+　<span class="click-item" onclick="goYearPage()">【2025】</span>
+　是不是很感动，没有就算了，切~冷漠的女人
+　希望2026上课能不犯困，希望能早睡，我要活到180，希望图书馆多出现身影，要励志，希望学校少一些七里八里我不愿意参加的活动，希望诸事皆顺。诶呀一不小心变成了许愿池，投个币，给你一次许愿的机会<span class="click-item" onclick="goWishPage()">【许愿】</span>。
+　来吧，来给你记录一下2025年的倒数第2天的一天，困死了现在，昨晚一点多睡的，八点半挣扎醒来，十点离开我温暖的床。oh my warm bed~啃了个苹果，不错不错，粉苹果，好吃好吃，我记得我堂哥之前说，不敢相信我还喜欢吃粉苹果🍎，然后吃了个从学校带回来的最后一个面包，吃了一包海带，嗯早上不宜太辣🌶，所以吃个不是很辣的（虽然前几天早餐吃的火鸡面）开始写这个+ random music 听到了那个天下第一好，就想到之前刷到的狗狗视频，看看最后会不会成为背景音乐吧~虽然是小情侣的小情歌，欸呀呀，甜甜的。嗯.......就在我起身准备换睡衣的时候，我姐姐他们来了，嗯，果断决定不换了，算了，然后照常玩手机。我爸见一个人就在那里招呼留下来吃中饭，硬是凑成了一大桌。吃饭啦吃饭啦，啧，我妈装饭，后面又拿了几个碗过来，我还以为还要装饭呢，搞得我在那装装装，结果都有饭了🙄。吃完了，休息一下。给我奶奶收衣服去浏阳，哎呀，拿完这件拿这件，只住一天，诶呀，收了大半天。他们要回去了，我姐姐在那发围巾，从新疆带回来的，成功拿到一条围巾🧣scarf~wait你的到来，等等等车技一般的样子，比我略高a little然后开始准备陈媛媛的历时一年半的小礼物，罗丹出品，必属精品~嗯，蕊爸催完蕊姐催，蕊姐催完蕊姑催，行吧，啧啧啧啧啧啧啧，吃你的烤全羊去。基础菜嘛，合菜。哦哟包饺子，你咋不去，啧啧，肯定是怕被嘲笑，包的太ugly。我嘛，吃吃粑粑柑，看看小情侣暧昧暧昧、谈谈恋爱。
+　最后的最后，the last 我想祝你放松，祝你快乐，祝你安宁，祝你远离忧虑，祝你不被左右情绪，祝你即使只是晒晒太阳也能感受到幸福，新年快乐。`;
+
+const yearText = `年度总结
+🔔 报告生成成功
+用户：张蕊蕊
+年度总结官：罗丹
+报告周期：2025.01.01 – 2025.12.31
+综合评级：⭐⭐⭐⭐ （就不给你五星）
+
+📊 一、年度陪伴大数据
+全年聊天总天数：356-？ 天 💬（别问为什么打问号，问就是不知道）
+全年消息发送总量：356+？ 条 📈（同上~）
+深夜 emo 谈心次数：？ 次 🌙（这个空留给你）emo不知道，反正被你搞emo有几次
+年度见面次数：？ 次 🤝
+一起干饭次数：？ 顿 🍚
+一起奶茶咖啡：？ 杯 🧋
+一起吐槽发疯：？ 次 😤
+互相安慰打气：？ 次 💪
+年度分享内容：？ 次 🎵🎬（人生要留有悬念好吧）
+总结：垃圾桶🗑️
+（没错，垃圾桶）
+（看我怎么圆，你看垃圾桶对吧，就是装垃圾的~）
+（文笔有限圆不回来，此处就要有请，我的嘴替、我的文字包装师，豆包小姐）
+
+🗑️ 关于你是我 “垃圾桶” 的官方搞笑解释
+别误会！你不是真・垃圾桶，你是顶配版、静音版、永不满、不收费、还会安慰人的智能情绪回收站。
+我所有废话 → 你全收
+我所有吐槽 → 你秒懂
+我所有发疯 → 你陪着
+我所有负能量 → 一键清空
+别人的朋友：帅气、温柔、高冷我的朋友：专业承接我所有破事，全年无休，五星好评
+你不是垃圾桶，你是我的情绪救星、废话收纳盒、崩溃缓冲垫、人生售后客服。
+简单说：离了你，我早炸了。
+
+🔑 二、年度关键词
+冷漠 🍀（什么？有疑问？那憋着）
+胡说八道大师 ✨
+奶茶续命 🥤
+<img src="D:\\website\\photo\\微信图片_20260214201344_1231_2.jpg" class="keyword-img">
+<img src="D:\\website\\photo\\微信图片_20260214201403_1238_2.jpg" class="keyword-img">
+图书馆暂住者 🚶‍♀️
+葫芦娃有八娃，我封你睡娃
+<img src="C:\\Users\\ld\\Pictures\\Screenshots\\屏幕截图 2026-02-15 105828.png" class="keyword-img">
+<img src="C:\\Users\\ld\\Pictures\\Screenshots\\屏幕截图 2026-02-15 110504.png" class="keyword-img">
+<img src="C:\\Users\\ld\\Pictures\\Screenshots\\屏幕截图 2026-02-15 110454.png" class="keyword-img">
+<img src="C:\\Users\\ld\\Pictures\\Screenshots\\屏幕截图 2026-02-15 110425.png" class="keyword-img">
+<img src="C:\\Users\\ld\\Pictures\\Screenshots\\屏幕截图 2026-02-15 110415.png" class="keyword-img">
+<img src="C:\\Users\\ld\\Pictures\\Screenshots\\屏幕截图 2026-02-15 110358.png" class="keyword-img">
+<img src="C:\\Users\\ld\\Pictures\\Screenshots\\屏幕截图 2026-02-15 105828.png" class="keyword-img">
+
+🎤 三、年度高频语录
+你最常说：
+困😴
+对啊 🫂
+我最常说：
+啊哈 😌
+
+🎬 四、年度高光时刻
+我们一起：吃喝玩乐 🎉
+搞笑的名场面：震惊！！！一女子吃火锅，把装方便面的碗转手递给了服务员?! 😂
+
+🧠 五、好友性格画像
+靠谱程度：⭐⭐⭐（？为什么只有三星？）（你自己也不想想，“计划赶不上变化~~”然后就化身孙悟空七十二变了）
+温柔程度：⭐⭐⭐（暴躁，不服？）
+耐心程度：⭐⭐
+宠人指数：💥 爆表
+情绪价值：🏆 拉满
+官方认证：情绪不稳定器↗↘・两眼一闭就是睡・奶茶duangduangduang
+
+🏆 六、年度成就解锁
+✅ 旅行打卡・旅行青蛙✅ 深夜焦虑・失眠嘎嘎嘎✅ delicious・吃吃吃✅ 
+
+💌 七、年度心里话
+这一年真的很谢谢你。开心的时候，你陪我一起疯；难过的时候，你接住我所有情绪；迷茫的时候，你给我勇气；疲惫的时候，你让我安心。
+我不用在你面前假装坚强，不用小心翼翼，不用刻意讨好。你见过我最狼狈的样子，也见过我最开心的模样。
+你是我疲惫生活里的光 ✨是我平凡日子里的例外与偏爱 🫶是我一回头就会在的人。
+
+🎯 八、2026 好友新计划
+继续吃吃喝喝，长胖就怪你 🍔
+拍照记录美好生活 📸
+变好看、变有钱、变开心 💰
+不许失联、不许冷淡、不许偷偷走散 🚫
+
+📝 九、最终总结
+「最佳好友」「最佳陪伴」「最佳治愈」
+综合评分：S+  ♾️
+新的一年，愿你平安、顺遂、开心、被爱。我们不止今年，还有明年、年年。
+
+控诉：
+不回信息！！！！！`;
+
+checkBtn.addEventListener('click', startEssay);
+sendWishBtn.addEventListener('click', sendWish);
+backToEssayBtn.addEventListener('click', backToEssay);
+
+function startEssay() {
+  welcomePage.style.display = 'none';
+  essayContent.style.display = 'block';
+  backToCardBtn.style.display = 'block';
+  essayContent.innerHTML = '';
+
+  const lines = essayText.split('\n');
+  lines.forEach(line => {
+    const div = document.createElement('div');
+    div.className = 'line';
+    div.innerHTML = line;
+    essayContent.appendChild(div);
+  });
+
+  let i = 0;
+  const timer = setInterval(() => {
+    const allLines = document.querySelectorAll('#essayContent .line');
+    if (i >= allLines.length) {
+      clearInterval(timer);
+      return;
+    }
+    allLines[i++].classList.add('show');
+  }, 280);
+}
+
+function goYearPage() {
+  essayContent.style.display = 'none';
+  yearContent.style.display = 'block';
+  backToEssayBtn.style.display = 'block';
+  yearContent.innerHTML = '';
+
+  const lines = yearText.split('\n');
+  lines.forEach(line => {
+    const div = document.createElement('div');
+    div.className = 'line';
+    div.innerHTML = line;
+    yearContent.appendChild(div);
+  });
+
+  let i = 0;
+  const timer = setInterval(() => {
+    const allLines = document.querySelectorAll('#yearContent .line');
+    if (i >= allLines.length) {
+      clearInterval(timer);
+      return;
+    }
+    allLines[i++].classList.add('show');
+  }, 250);
+}
+
+function goWishPage() {
+  essayContent.style.display = 'none';
+  wishPage.style.display = 'flex';
+  backToEssayBtn.style.display = 'block';
+}
+
+function backToEssay() {
+  yearContent.style.display = 'none';
+  wishPage.style.display = 'none';
+  essayContent.style.display = 'block';
+  backToEssayBtn.style.display = 'none';
+}
+
+function sendWish() {
+  const wishVal = wishInput.value.trim();
+  if (!wishVal) {
+    alert('请写下你的新年愿望再发送哦～');
+    return;
+  }
+  alert('愿望发送成功啦！罗丹已经收到咯～');
+  console.log('===== 张蕊蕊的2026新年愿望 =====');
+  console.log(wishVal);
+  wishInput.value = '';
+}
+</script>
+</body>
+</html>

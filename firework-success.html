@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录成功 | 烟花庆典</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f5f0e6;
+            background-image: url("image/微信图片_20260201011724_549_2.jpg");
+            background-blend-mode: overlay;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            font-family: 'Ma Shan Zheng', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        #fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .text-container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .welcome-text, .motto-text {
+            font-size: 48px;
+            color: #a70f24;
+            line-height: 1.8;
+            letter-spacing: 3px;
+            text-shadow: 3px 3px 5px rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+        .welcome-text.fade-in, .motto-text.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .welcome-text {
+            transform: translateY(30px);
+            margin-bottom: 20px;
+        }
+        .motto-text {
+            transform: translateY(30px);
+            font-size: 42px;
+        }
+        @keyframes pat {
+            0% { transform: scale(1); }
+            20% { transform: scale(1.1) rotate(2deg); }
+            40% { transform: scale(0.95) rotate(-1deg); }
+            60% { transform: scale(1.05) rotate(1deg); }
+            80% { transform: scale(0.98) rotate(-0.5deg); }
+            100% { transform: scale(1); }
+        }
+        .text-container.pat {
+            animation: pat 1s ease-in-out;
+        }
+        .next-btn {
+            padding: 20px 50px;
+            font-size: 28px;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            font-family: 'Ma Shan Zheng', cursive;
+            background: linear-gradient(90deg, #c8102e 0%, #d1213b 100%);
+            border: 4px solid #e8c850;
+            box-shadow: 0 8px 0 #a70f24, 0 10px 15px rgba(0,0,0,0.08);
+            position: relative;
+            z-index: 10;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        .next-btn.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .next-btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #b70e29 0%, #c8102e 100%);
+            box-shadow: 0 8px 0 #960d20, 0 10px 15px rgba(0,0,0,0.1);
+        }
+        .next-btn:active {
+            transform: translateY(8px);
+            box-shadow: 0 0 0 #960d20, 0 5px 10px rgba(0,0,0,0.08);
+        }
+        /* 隐藏音频控件，但保留播放功能 */
+        #bgMusic {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 音频标签必须放在body内部（开头/中间都可以，优先放前面） -->
+    <audio id="bgMusic" loop>
+        <source src="WvGDFh-天下第一好-李小眼.mp3" type="audio/mpeg">
+        您的浏览器不支持音频播放，请升级浏览器！
+    </audio>
+
+    <canvas id="fireworks"></canvas>
+    <div class="text-container">
+        <div class="welcome-text" id="welcomeText">张蕊💩，成功登陆！</div>
+        <div class="motto-text" id="mottoText">勇敢蕊蕊不怕困难！</div>
+    </div>
+    <!-- 直接绑定跳转cards.html，无多余逻辑 -->
+    <button class="next-btn" id="nextBtn" onclick="window.location.href='cards.html'">NEXT</button>
+
+    <script>
+        // 姓名替换
+        const urlParams = new URLSearchParams(window.location.search);
+        const userName = urlParams.get('name') || '小伙伴';
+        document.getElementById('welcomeText').innerHTML = `${userName}💩，成功登陆！`;
+
+        // 烟花动画
+        const canvas = document.getElementById('fireworks');
+        const ctx = canvas.getContext('2d');
+        let fireworks = [];
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Firework {
+            constructor() {
+                this.x = Math.random() > 0.5 ? canvas.width + 50 : -50;
+                this.y = canvas.height + 50;
+                this.targetX = Math.random() * canvas.width * 0.6 + canvas.width * 0.2;
+                this.targetY = Math.random() * canvas.height * 0.4;
+                this.speed = 5;
+                this.angle = Math.atan2(this.targetY - this.y, this.targetX - this.x);
+                this.vx = Math.cos(this.angle) * this.speed;
+                this.vy = Math.sin(this.angle) * this.speed;
+                this.exploded = false;
+                this.color = `hsl(${Math.random() * 60 + 330}, 100%, 50%)`;
+            }
+            update() {
+                if (!this.exploded) {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    const distance = Math.hypot(this.targetX - this.x, this.targetY - this.y);
+                    if (distance < 20) {
+                        this.exploded = true;
+                        this.createParticles();
+                    }
+                }
+            }
+            createParticles() {
+                for (let i = 0; i < 30; i++) {
+                    particles.push(new Particle(this.x, this.y, this.color));
+                }
+            }
+            draw() {
+                if (!this.exploded) {
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y);
+                    ctx.lineTo(this.x - this.vx * 3, this.y - this.vy * 3);
+                    ctx.strokeStyle = this.color;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.angle = Math.random() * Math.PI * 2;
+                this.speed = Math.random() * 4 + 1;
+                this.vx = Math.cos(this.angle) * this.speed;
+                this.vy = Math.sin(this.angle) * this.speed;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.02 + 0.01;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.decay;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        setInterval(() => {
+            if (fireworks.length < 5) fireworks.push(new Firework());
+        }, 1500);
+
+        function animate() {
+            ctx.fillStyle = 'rgba(245, 240, 230, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            fireworks = fireworks.filter(f => !f.exploded || particles.length > 0);
+            fireworks.forEach(f => { f.update(); f.draw(); });
+            particles = particles.filter(p => p.alpha > 0);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // 文字时序
+        setTimeout(() => document.getElementById('welcomeText').classList.add('fade-in'), 2000);
+        setTimeout(() => document.getElementById('mottoText').classList.add('fade-in'), 4000);
+        setTimeout(() => document.querySelector('.text-container').classList.add('pat'), 6000);
+        setTimeout(() => document.getElementById('nextBtn').classList.add('show'), 7000);
+
+            </script>
+</body>
+</html>

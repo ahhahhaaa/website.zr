@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奶茶回忆录 | 大一上的奶茶时光</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            /* 替换为指定的虚化背景图，保留原有布局逻辑 */
+            background: url("D:/website/image/微信图片_20260201011724_549_2.jpg") no-repeat center center fixed;
+            background-size: cover;
+            /* 核心：添加相对定位，为伪元素做铺垫 */
+            position: relative;
+            min-height: 100vh;
+            font-family: 'Ma Shan Zheng', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        /* 叠加虚化层+半透明底色，保证前景内容清晰 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(245, 240, 230, 0.8); /* 原浅米色+80%透明度，保留温馨感 */
+            backdrop-filter: blur(8px); /* 虚化程度，可调整px值 */
+            z-index: -1; /* 放在最底层，不遮挡任何内容 */
+        }
+
+        /* 文本框样式 - 增加z-index确保在最上层 */
+        .text-box {
+            font-size: 36px;
+            color: #a70f24;
+            text-align: center;
+            margin-bottom: 30px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        /* 图片展示容器 - 增加z-index确保在最上层 */
+        .image-container {
+            width: 300px;
+            height: 400px;
+            position: relative;
+            margin-bottom: 30px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        /* 美食图片样式 */
+        .milk-tea-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        /* 当前显示的图片 */
+        .milk-tea-img.active {
+            opacity: 1;
+        }
+
+        /* 返回按钮样式 - 卡牌1对应颜色，增加z-index */
+        .back-btn {
+            padding: 15px 40px;
+            background: #FFC2E2; /* 卡牌1主色 */
+            color: #A74F68;      /* 卡牌1文字色 */
+            border: none;
+            border-radius: 30px;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none; /* 初始隐藏 */
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .back-btn:hover {
+            background: #f9a8d4; /* 卡牌1hover色 */
+            transform: translateY(-3px);
+        }
+
+        /* 适配移动端 - 降低虚化程度，避免性能问题 */
+        @media (max-width: 768px) {
+            .text-box {
+                font-size: 28px;
+            }
+            .image-container {
+                width: 250px;
+                height: 350px;
+            }
+            .back-btn {
+                font-size: 24px;
+                padding: 12px 30px;
+            }
+            body::before {
+                backdrop-filter: blur(5px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 文本显示框 -->
+    <div class="text-box" id="textBox">我们就这样吃吃吃🤩</div>
+
+    <!-- 图片展示容器 -->
+    <div class="image-container" id="imageContainer"></div>
+
+    <!-- 返回按钮 -->
+    <button class="back-btn" id="backBtn" onclick="window.location.href='cards.html'">返回</button>
+
+    <script>
+        // 美食图片路径列表
+        const milkTeaImages = [
+            "D:/website/photo/微信图片_20260201191217_597_2.jpg",
+            "D:/website/photo/微信图片_20260201191218_598_2.jpg",
+            "D:/website/photo/微信图片_20260201191219_599_2.jpg",
+            "D:/website/photo/微信图片_20260201191220_600_2.jpg",
+            "D:/website/photo/微信图片_20260201191220_601_2.jpg",
+            "D:/website/photo/微信图片_20260201191221_602_2.jpg",
+            "D:/website/photo/微信图片_20260201191222_603_2.jpg",
+            "D:/website/photo/微信图片_20260201191223_604_2.jpg",
+            "D:/website/photo/微信图片_20260201191224_605_2.jpg",
+            "D:/website/photo/微信图片_20260201191225_606_2.jpg",
+            "D:/website/photo/微信图片_20260201191227_607_2.jpg",
+            "D:/website/photo/微信图片_20260201191228_608_2.jpg",
+            "D:/website/photo/微信图片_20260201191228_609_2.jpg",
+            "D:/website/photo/微信图片_20260201191229_610_2.jpg",
+            "D:/website/photo/微信图片_20260201191231_611_2.jpg",
+            "D:/website/photo/微信图片_20260201191231_612_2.jpg",
+            "D:/website/photo/微信图片_20260201191232_613_2.jpg",
+            "D:/website/photo/微信图片_20260201191233_614_2.jpg",
+            "D:/website/photo/微信图片_20260201191235_616_2.jpg",
+            "D:/website/photo/微信图片_20260201191236_617_2.jpg",
+            "D:/website/photo/微信图片_20260201191237_618_2.jpg",
+            "D:/website/photo/微信图片_20260201191238_619_2.jpg",
+            "D:/website/photo/微信图片_20260201191239_620_2.jpg",
+            "D:/website/photo/微信图片_20260201191240_621_2.jpg",
+            "D:/website/photo/微信图片_20260201191241_622_2.jpg",
+            "D:/website/photo/微信图片_20260201191242_623_2.jpg",
+            "D:/website/photo/微信图片_20260201191242_624_2.jpg",
+            "D:/website/photo/微信图片_20260201191243_625_2.jpg",
+            "D:/website/photo/微信图片_20260201191244_626_2.jpg",
+            "D:/website/photo/微信图片_20260201191245_627_2.jpg"
+        ];
+
+        // 获取DOM元素
+        const textBox = document.getElementById('textBox');
+        const imageContainer = document.getElementById('imageContainer');
+        const backBtn = document.getElementById('backBtn');
+        
+        // 初始化变量
+        let currentIndex = 0;
+
+        // 初始化：创建所有图片元素
+        function initImages() {
+            milkTeaImages.forEach((imgSrc, index) => {
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.className = 'milk-tea-img';
+                img.alt = `美食${index + 1}`;
+                imageContainer.appendChild(img);
+            });
+        }
+
+        // 展示下一张图片
+        function showNextImage() {
+            if (currentIndex >= milkTeaImages.length) {
+                // 展示完毕，显示结束文字
+                textBox.textContent = `喜欢喜欢`;
+                // 显示返回按钮
+                backBtn.style.display = 'block';
+                return;
+            }
+            // 隐藏上一张图片
+            const allImages = document.querySelectorAll('.milk-tea-img');
+            if (currentIndex > 0) {
+                allImages[currentIndex - 1].classList.remove('active');
+            }
+            // 显示当前图片
+            allImages[currentIndex].classList.add('active');
+            currentIndex++;
+            // 2秒切换一张，速度不变
+            setTimeout(showNextImage, 2000);
+        }
+
+        // 页面加载后执行
+        window.onload = function() {
+            initImages();
+            // 延迟1秒开始展示
+            setTimeout(showNextImage, 1000);
+        };
+    </script>
+</body>
+</html>

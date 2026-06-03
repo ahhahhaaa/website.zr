@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>十上成长记 | 大一上的美好时光</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            /* 替换为虚化背景图，保留原有布局逻辑 */
+            background: url("D:/website/image/微信图片_20260201011724_549_2.jpg") no-repeat center center fixed;
+            background-size: cover;
+            /* 核心：背景虚化效果 */
+            position: relative;
+            min-height: 100vh;
+            font-family: 'Ma Shan Zheng', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        /* 叠加半透明层增强虚化视觉效果，避免文字/图片被背景干扰 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(245, 240, 230, 0.8); /* 原底色+透明度，保留温馨感 */
+            backdrop-filter: blur(8px); /* 虚化程度，可调整px值 */
+            z-index: -1; /* 放在最底层，不遮挡内容 */
+        }
+
+        /* 文本框样式 - 保留浮现动画 */
+        .text-box {
+            font-size: 36px;
+            color: #a70f24;
+            text-align: center;
+            margin-bottom: 30px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0; /* 初始隐藏 */
+            transform: translateY(20px);
+            transition: all 1s ease;
+            z-index: 1; /* 确保文字在最上层 */
+        }
+        /* 文本浮现类 */
+        .text-box.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 图片展示容器 - 初始隐藏 */
+        .image-container {
+            width: 300px;
+            height: 400px;
+            position: relative;
+            margin-bottom: 30px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            opacity: 0; /* 初始隐藏 */
+            transition: all 1s ease 0.5s; /* 文本浮现后0.5秒显示图片 */
+            z-index: 1; /* 确保图片在最上层 */
+        }
+        /* 图片容器显示类 */
+        .image-container.show {
+            opacity: 1;
+        }
+
+        /* 成长图片样式 */
+        .milk-tea-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        /* 当前显示的图片 */
+        .milk-tea-img.active {
+            opacity: 1;
+        }
+
+        /* 返回按钮样式 - 卡牌2对应颜色 */
+        .back-btn {
+            padding: 15px 40px;
+            background: #B5EAD7; /* 卡牌2主色 */
+            color: #4F8A6D;      /* 卡牌2文字色 */
+            border: none;
+            border-radius: 30px;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none; /* 初始隐藏 */
+            transition: all 0.3s ease;
+            z-index: 1; /* 确保按钮在最上层 */
+        }
+
+        .back-btn:hover {
+            background: #95e0c2; /* 卡牌2hover加深色 */
+            transform: translateY(-3px);
+        }
+
+        /* 适配移动端 */
+        @media (max-width: 768px) {
+            .text-box {
+                font-size: 28px;
+            }
+            .image-container {
+                width: 250px;
+                height: 350px;
+            }
+            .back-btn {
+                font-size: 24px;
+                padding: 12px 30px;
+            }
+            /* 移动端虚化程度稍降低，避免性能问题 */
+            body::before {
+                backdrop-filter: blur(5px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 文本显示框 -->
+    <div class="text-box" id="textBox">十上成长记&&</div>
+
+    <!-- 图片展示容器 -->
+    <div class="image-container" id="imageContainer"></div>
+
+    <!-- 返回按钮 -->
+    <button class="back-btn" id="backBtn" onclick="window.location.href='cards.html'">返回</button>
+
+    <script>
+        // 替换为指定的最新图片路径列表
+        const milkTeaImages = [
+            "D:/website/photo/微信图片_20260201191144_587_2.jpg",
+            "D:/website/photo/微信图片_20260201191145_588_2.jpg",
+            "D:/website/photo/微信图片_20260201191146_589_2.jpg",
+            "D:/website/photo/微信图片_20260201191147_590_2.jpg",
+            "D:/website/photo/微信图片_20260201191148_591_2.jpg",
+            "D:/website/photo/微信图片_20260201191148_592_2.jpg",
+            "D:/website/photo/微信图片_20260201191149_593_2.jpg",
+            "D:/website/photo/微信图片_20260201191150_594_2.jpg",
+            "D:/website/photo/微信图片_20260201191151_595_2.jpg",
+            "D:/website/photo/微信图片_20260201191153_596_2.jpg"
+        ];
+
+        // 获取DOM元素
+        const textBox = document.getElementById('textBox');
+        const imageContainer = document.getElementById('imageContainer');
+        const backBtn = document.getElementById('backBtn');
+        
+        // 初始化变量（删除totalCount）
+        let currentIndex = 0;
+
+        // 初始化：创建所有图片元素
+        function initImages() {
+            milkTeaImages.forEach((imgSrc, index) => {
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.className = 'milk-tea-img';
+                img.alt = `成长记${index + 1}`;
+                imageContainer.appendChild(img);
+            });
+        }
+
+        // 展示下一张图片（删除+1动画调用）
+        function showNextImage() {
+            if (currentIndex >= milkTeaImages.length) {
+                // 展示完毕，显示结束文字
+                textBox.textContent = `苗苗长成大树🌳`;
+                // 显示返回按钮
+                backBtn.style.display = 'block';
+                return;
+            }
+            // 隐藏上一张图片
+            const allImages = document.querySelectorAll('.milk-tea-img');
+            if (currentIndex > 0) {
+                allImages[currentIndex - 1].classList.remove('active');
+            }
+            // 显示当前图片（删除+1动画）
+            allImages[currentIndex].classList.add('active');
+            currentIndex++;
+            // 2秒切换一张，速度不变
+            setTimeout(showNextImage, 2000);
+        }
+
+        // 页面加载后执行 - 保留文字浮现→图片显示逻辑
+        window.onload = function() {
+            // 1. 先让文字"十上成长记&&"浮现
+            textBox.classList.add('fade-in');
+            // 2. 1.5秒后初始化图片并显示图片容器，开始轮播
+            setTimeout(() => {
+                initImages();
+                imageContainer.classList.add('show');
+                showNextImage();
+            }, 1500);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奶茶回忆录 | 大一上的奶茶时光</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            /* 替换为指定的虚化背景图，保留原有布局逻辑 */
+            background: url("D:/website/image/微信图片_20260201011724_549_2.jpg") no-repeat center center fixed;
+            background-size: cover;
+            /* 核心：添加相对定位，为伪元素做铺垫 */
+            position: relative;
+            min-height: 100vh;
+            font-family: 'Ma Shan Zheng', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        /* 叠加虚化层+半透明底色，保证前景内容清晰 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(245, 240, 230, 0.8); /* 原浅米色+80%透明度，保留温馨感 */
+            backdrop-filter: blur(8px); /* 虚化程度，可调整px值 */
+            z-index: -1; /* 放在最底层，不遮挡任何内容 */
+        }
+
+        /* 文本框样式 - 增加z-index确保在最上层 */
+        .text-box {
+            font-size: 36px;
+            color: #a70f24;
+            text-align: center;
+            margin-bottom: 30px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        /* 图片展示容器 - 增加z-index确保在最上层 */
+        .image-container {
+            width: 300px;
+            height: 400px;
+            position: relative;
+            margin-bottom: 30px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        /* 奶茶图片样式 */
+        .milk-tea-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        /* 当前显示的图片 */
+        .milk-tea-img.active {
+            opacity: 1;
+        }
+
+        /* +1动画样式 */
+        .card3 .card-front { background: #CBCEFB; color: #5B5F97; }
+        .plus-one {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 60px;
+            background: #CBCEFB;
+            border-radius: 50%;
+            color: #5B5F97;
+            font-size: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            animation: plusOneAnimation 1s ease-in-out;
+            z-index: 2; /* 确保+1动画在图片上层 */
+        }
+
+        /* +1动画关键帧 */
+        @keyframes plusOneAnimation {
+            0% { opacity: 0; transform: translateY(-50%) scale(0.5); }
+            50% { opacity: 1; transform: translateY(-50%) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-50%) scale(0.5); }
+        }
+
+        /* 返回按钮样式 - 匹配卡片3配色，增加z-index */
+        .back-btn {
+            padding: 15px 40px;
+            background: #CBCEFB;
+            color: #5B5F97;
+            border: none;
+            border-radius: 30px;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none; /* 初始隐藏 */
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .back-btn:hover {
+            background: #b4b9f8;
+            transform: translateY(-3px);
+        }
+
+        /* 适配移动端 - 降低虚化程度，避免性能问题 */
+        @media (max-width: 768px) {
+            .text-box {
+                font-size: 28px;
+            }
+            .image-container {
+                width: 250px;
+                height: 350px;
+            }
+            .plus-one {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+            .back-btn {
+                font-size: 24px;
+                padding: 12px 30px;
+            }
+            body::before {
+                backdrop-filter: blur(5px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 文本显示框 -->
+    <div class="text-box" id="textBox">大一上你喝了多少次奶茶呢？</div>
+
+    <!-- 图片展示容器 -->
+    <div class="image-container" id="imageContainer"></div>
+
+    <!-- 核心修正：返回按钮直接跳转cards.html -->
+    <button class="back-btn" id="backBtn" onclick="window.location.href='cards.html'">返回</button>
+
+    <script>
+        // 奶茶图片列表（按你提供的本地路径）
+        const milkTeaImages = [
+            "D:/website/photo/微信图片_20260214201341_1228_2.jpg",
+            "D:/website/photo/微信图片_20260214201342_1229_2.jpg",
+            "D:/website/photo/微信图片_20260214201344_1231_2.jpg",
+            "D:/website/photo/微信图片_20260214201344_1232_2.jpg",
+            "D:/website/photo/微信图片_20260214201400_1234_2.jpg",
+            "D:/website/photo/微信图片_20260214201401_1235_2.jpg",
+            "D:/website/photo/微信图片_20260214201403_1237_2.jpg",
+            "D:/website/photo/微信图片_20260214201403_1238_2.jpg",
+            "D:/website/photo/微信图片_20260214201343_1230_2.jpg",
+            "D:/website/photo/微信图片_20260214201359_1233_2.jpg",
+            "D:/website/photo/微信图片_20260214201402_1236_2.jpg",
+            "D:/website/photo/微信图片_20260214201404_1239_2.jpg"
+        ];
+
+        // 获取DOM元素
+        const textBox = document.getElementById('textBox');
+        const imageContainer = document.getElementById('imageContainer');
+        const backBtn = document.getElementById('backBtn');
+        
+        // 初始化变量
+        let currentIndex = 0;
+        let totalCount = 0;
+
+        // 初始化：创建所有图片元素
+        function initImages() {
+            milkTeaImages.forEach((imgSrc, index) => {
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.className = 'milk-tea-img';
+                img.alt = `奶茶${index + 1}`;
+                imageContainer.appendChild(img);
+            });
+        }
+
+        // 显示+1动画
+        function showPlusOne() {
+            const plusOne = document.createElement('div');
+            plusOne.className = 'plus-one';
+            plusOne.textContent = '+1';
+            imageContainer.appendChild(plusOne);
+            // 动画结束后移除元素
+            setTimeout(() => {
+                plusOne.remove();
+            }, 1000);
+        }
+
+        // 展示下一张图片
+        function showNextImage() {
+            if (currentIndex >= milkTeaImages.length) {
+                // 展示完毕，显示总数
+                textBox.textContent = `大一上你喝了${totalCount}+++次奶茶呢😙～`;
+                // 显示返回按钮
+                backBtn.style.display = 'block';
+                return;
+            }
+            // 隐藏上一张图片
+            const allImages = document.querySelectorAll('.milk-tea-img');
+            if (currentIndex > 0) {
+                allImages[currentIndex - 1].classList.remove('active');
+            }
+            // 显示当前图片+触发+1动画
+            allImages[currentIndex].classList.add('active');
+            showPlusOne();
+            totalCount++;
+            currentIndex++;
+            // 1.5秒切换一张（可改数字调整速度，单位毫秒）
+            setTimeout(showNextImage, 2000);
+        }
+
+        // 页面加载后执行
+        window.onload = function() {
+            initImages();
+            // 延迟1秒开始展示，给用户看初始文本
+            setTimeout(showNextImage, 1000);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心动嘉宾 | 大一上的美好时光</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            /* 保留虚化背景图 */
+            background: url("D:/website/image/微信图片_20260201011724_549_2.jpg") no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+            min-height: 100vh;
+            font-family: 'Ma Shan Zheng', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(245, 240, 230, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: -1;
+        }
+
+        /* 文本框样式 - 保留z-index */
+        .text-box {
+            font-size: 36px;
+            color: #a70f24;
+            text-align: center;
+            margin-bottom: 30px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        /* 图片展示容器 - 保留z-index */
+        .image-container {
+            width: 300px;
+            height: 400px;
+            position: relative;
+            margin-bottom: 30px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        /* 心动嘉宾图片样式 */
+        .milk-tea-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        .milk-tea-img.active {
+            opacity: 1;
+        }
+
+        /* 心动嘉宾+1动画样式 - 替换为卡牌4配色 */
+        .plus-one {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            width: 80px; /* 加宽适配文字 */
+            height: 60px;
+            background: #FFD6A5; /* 卡牌4主色 */
+            color: #B06600;      /* 卡牌4文字色 */
+            border-radius: 30px; /* 椭圆更适配文字 */
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            animation: plusOneAnimation 1s ease-in-out;
+            z-index: 2;
+            padding: 0 5px;
+        }
+
+        /* +1动画关键帧 - 保留 */
+        @keyframes plusOneAnimation {
+            0% { opacity: 0; transform: translateY(-50%) scale(0.5); }
+            50% { opacity: 1; transform: translateY(-50%) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-50%) scale(0.5); }
+        }
+
+        /* 返回按钮样式 - 替换为卡牌4对应颜色 */
+        .back-btn {
+            padding: 15px 40px;
+            background: #FFD6A5; /* 卡牌4主色 */
+            color: #B06600;      /* 卡牌4文字色 */
+            border: none;
+            border-radius: 30px;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .back-btn:hover {
+            background: #ffc880; /* 卡牌4hover加深色 */
+            transform: translateY(-3px);
+        }
+
+        /* 适配移动端 */
+        @media (max-width: 768px) {
+            .text-box {
+                font-size: 28px;
+            }
+            .image-container {
+                width: 250px;
+                height: 350px;
+            }
+            .plus-one {
+                width: 70px;
+                height: 50px;
+                font-size: 20px;
+            }
+            .back-btn {
+                font-size: 24px;
+                padding: 12px 30px;
+            }
+            body::before {
+                backdrop-filter: blur(5px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 文本显示框 - 修改初始文字 -->
+    <div class="text-box" id="textBox">上网就是为了你们❤️~</div>
+
+    <!-- 图片展示容器 -->
+    <div class="image-container" id="imageContainer"></div>
+
+    <!-- 返回按钮 -->
+    <button class="back-btn" id="backBtn" onclick="window.location.href='cards.html'">返回</button>
+
+    <script>
+        // 替换为指定的心动嘉宾图片路径列表
+        const milkTeaImages = [
+            "D:/website/photo/微信图片_20260214201325_1220_2.jpg",
+            "D:/website/photo/微信图片_20260214201326_1221_2.jpg",
+            "D:/website/photo/微信图片_20260214201327_1222_2.jpg",
+            "D:/website/photo/微信图片_20260214201327_1223_2.jpg",
+            "D:/website/photo/微信图片_20260214201339_1224_2.jpg",
+            "D:/website/photo/微信图片_20260214201339_1225_2.jpg",
+            "D:/website/photo/微信图片_20260214201340_1226_2.jpg",
+            "D:/website/photo/微信图片_20260214201341_1227_2.jpg"
+        ];
+
+        // 获取DOM元素
+        const textBox = document.getElementById('textBox');
+        const imageContainer = document.getElementById('imageContainer');
+        const backBtn = document.getElementById('backBtn');
+        
+        // 初始化变量
+        let currentIndex = 0;
+        let totalCount = 0;
+
+        // 初始化：创建所有图片元素
+        function initImages() {
+            milkTeaImages.forEach((imgSrc, index) => {
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.className = 'milk-tea-img';
+                img.alt = `心动嘉宾${index + 1}`;
+                imageContainer.appendChild(img);
+            });
+        }
+
+        // 显示心动嘉宾+1动画 - 修改文案
+        function showPlusOne() {
+            const plusOne = document.createElement('div');
+            plusOne.className = 'plus-one';
+            plusOne.textContent = '心动嘉宾❤️+1'; // 替换+1文案
+            imageContainer.appendChild(plusOne);
+            // 动画结束后移除元素
+            setTimeout(() => {
+                plusOne.remove();
+            }, 1000);
+        }
+
+        // 展示下一张图片 - 删除结束文字，仅显示返回按钮
+        function showNextImage() {
+            if (currentIndex >= milkTeaImages.length) {
+                // 仅显示返回按钮，不修改文字
+                backBtn.style.display = 'block';
+                return;
+            }
+            // 隐藏上一张图片
+            const allImages = document.querySelectorAll('.milk-tea-img');
+            if (currentIndex > 0) {
+                allImages[currentIndex - 1].classList.remove('active');
+            }
+            // 显示当前图片+触发心动动画
+            allImages[currentIndex].classList.add('active');
+            showPlusOne();
+            totalCount++;
+            currentIndex++;
+            // 2秒切换一张
+            setTimeout(showNextImage, 2000);
+        }
+
+        // 页面加载后执行
+        window.onload = function() {
+            initImages();
+            // 延迟1秒开始展示
+            setTimeout(showNextImage, 1000);
+        };
+    </script>
+</body>
+</html>
