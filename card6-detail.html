@@ -9,10 +9,9 @@
 body { 
   min-height: 100vh; 
   overflow-x: hidden; 
-  background: #f5f5f5; /* 页面底层浅灰背景，更干净 */
+  background: #f5f5f5;
 }
 
-/* 顶部返回卡牌界面的按钮 */
 .back-to-card {
   position: fixed;
   top: 20px;
@@ -29,24 +28,22 @@ body {
   display: none;
 }
 
-/* 核心容器：外层白色框（去掉背景图，仅保留白色样式） */
 .container {
   width: 90%;
   max-width: 550px;
   min-height: 85vh;
   margin: 60px auto;
-  background: #ffffff; /* 纯白色外层框 */
+  background: #ffffff;
   border-radius: 24px;
   position: relative;
   overflow: hidden;
-  color: #333333; /* 文字改深色，适配纯白背景 */
-  text-shadow: none; /* 取消文字阴影 */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* 轻微阴影，让白色框更立体 */
+  color: #333333;
+  text-shadow: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   z-index: 1;
 }
 .container > * { position: relative; z-index: 2; }
 
-/* 欢迎页：查收标题+按钮（样式不变） */
 .welcome {
   width: 100%;
   height: 100%;
@@ -68,7 +65,6 @@ body {
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-/* 内容通用样式：小框框（样式不变） */
 .content {
   width: 100%;
   height: 100%;
@@ -78,9 +74,8 @@ body {
   white-space: pre-wrap;
   line-height: 1.8;
   font-size: 15px;
-  background: transparent; /* 透明，继承外层白色 */
+  background: transparent;
 }
-/* 逐行浮现动画类（不变） */
 .line {
   opacity: 0;
   transform: translateY(20px);
@@ -89,7 +84,6 @@ body {
 }
 .line.show { opacity: 1; transform: translateY(0); }
 
-/* 可点击的【2025】【许愿】样式（不变） */
 .click-item {
   color: #e89cb8;
   font-weight: bold;
@@ -97,12 +91,11 @@ body {
   text-decoration: underline;
 }
 
-/* 年度总结/许愿页的返回小作文按钮（不变） */
 .back-to-essay {
   position: absolute;
   bottom: 20px;
   left: 50%;
-  transform: translateY(-50%);
+  transform: translateX(-50%);
   padding: 8px 25px;
   background: #e89cb8;
   color: #fff;
@@ -114,7 +107,6 @@ body {
   z-index: 3;
 }
 
-/* 许愿页样式（不变） */
 .wish-page {
   width: 100%;
   height: 100%;
@@ -146,7 +138,6 @@ body {
   cursor: pointer;
 }
 
-/* 年度总结图片样式（不变） */
 .keyword-img {
   width: 100px;
   height: auto;
@@ -159,38 +150,30 @@ body {
 </style>
 </head>
 <body>
-<!-- 新增：音频标签 - 背景音乐 -->
-<audio id="bgMusic" src="D:\website\WvGDFh-天下第一好-李小眼.mp3" loop autoplay></audio>
 
-<!-- 返回卡牌界面的按钮 -->
+<audio id="bgMusic" src="WvGDFh-天下第一好-李小眼.mp3" loop></audio>
+
 <button class="back-to-card" onclick="window.location.href='cards.html'">返回卡牌界面</button>
 
 <div class="container">
-  <!-- 欢迎页 -->
   <div class="welcome" id="welcomePage">
     <h2>查收你的2026小作文</h2>
     <button id="checkBtn">查收</button>
   </div>
 
-  <!-- 小作文内容区 -->
   <div class="content" id="essayContent"></div>
-
-  <!-- 年度总结内容区 -->
   <div class="content" id="yearContent"></div>
 
-  <!-- 许愿页 -->
   <div class="wish-page" id="wishPage">
     <h3>你的新年愿望是什么呀？</h3>
     <input type="text" id="wishInput" placeholder="写下你的新年愿望吧～">
     <button id="sendWish">发送</button>
   </div>
 
-  <!-- 返回小作文的按钮（年度总结/许愿页共用） -->
   <button class="back-to-essay" id="backToEssayBtn">返回小作文</button>
 </div>
 
 <script>
-// 所有JS代码完全不变，功能正常
 const welcomePage = document.getElementById('welcomePage');
 const checkBtn = document.getElementById('checkBtn');
 const essayContent = document.getElementById('essayContent');
@@ -200,8 +183,6 @@ const backToCardBtn = document.querySelector('.back-to-card');
 const backToEssayBtn = document.getElementById('backToEssayBtn');
 const sendWishBtn = document.getElementById('sendWish');
 const wishInput = document.getElementById('wishInput');
-
-// 新增：可选 - 获取音频元素，方便后续控制（如暂停/播放）
 const bgMusic = document.getElementById('bgMusic');
 
 const essayText = `To张蕊蕊：
@@ -250,17 +231,10 @@ const yearText = `年度总结
 冷漠 🍀（什么？有疑问？那憋着）
 胡说八道大师 ✨
 奶茶续命 🥤
-<img src="D:\\website\\photo\\微信图片_20260214201344_1231_2.jpg" class="keyword-img">
-<img src="D:\\website\\photo\\微信图片_20260214201403_1238_2.jpg" class="keyword-img">
+<img src="微信图片_20260214201344_1231_2.jpg" class="keyword-img">
+<img src="微信图片_20260214201403_1238_2.jpg" class="keyword-img">
 图书馆暂住者 🚶‍♀️
 葫芦娃有八娃，我封你睡娃
-<img src="C:\\Users\\ld\\Pictures\\Screenshots\\屏幕截图 2026-02-15 105828.png" class="keyword-img">
-<img src="C:\\Users\\ld\\Pictures\\Screenshots\\屏幕截图 2026-02-15 110504.png" class="keyword-img">
-<img src="C:\\Users\\ld\\Pictures\\Screenshots\\屏幕截图 2026-02-15 110454.png" class="keyword-img">
-<img src="C:\\Users\\ld\\Pictures\\Screenshots\\屏幕截图 2026-02-15 110425.png" class="keyword-img">
-<img src="C:\\Users\\ld\\Pictures\\Screenshots\\屏幕截图 2026-02-15 110415.png" class="keyword-img">
-<img src="C:\\Users\\ld\\Pictures\\Screenshots\\屏幕截图 2026-02-15 110358.png" class="keyword-img">
-<img src="C:\\Users\\ld\\Pictures\\Screenshots\\屏幕截图 2026-02-15 105828.png" class="keyword-img">
 
 🎤 三、年度高频语录
 你最常说：
@@ -303,7 +277,11 @@ const yearText = `年度总结
 控诉：
 不回信息！！！！！`;
 
-checkBtn.addEventListener('click', startEssay);
+checkBtn.addEventListener('click', () => {
+  startEssay();
+  bgMusic.play().catch(err => {});
+});
+
 sendWishBtn.addEventListener('click', sendWish);
 backToEssayBtn.addEventListener('click', backToEssay);
 
