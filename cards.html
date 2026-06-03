@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>翻转卡片 | 烟花庆典</title>
+    <title>翻转卡片 | 新年留言</title>
     <style>
-        /* 复用index背景样式（请确认index.html的背景路径/样式一致） */
         @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #f5f0e6;
-            background-image: url("微信图片_20260201011724_549_2.jpg"); /* 与index.html背景一致 */
+            background-image: url("微信图片_20260201011724_549_2.jpg");
             background-blend-mode: overlay;
             background-size: cover;
             background-position: center;
@@ -22,263 +21,186 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            perspective: 1500px; /* 开启3D透视 */
+            perspective: 1500px;
         }
 
-        /* 卡片容器：网格布局，适配移动端 */
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 280px));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 30px;
-            justify-content: center;
             max-width: 1200px;
-            margin: 0 auto;
+            width: 100%;
         }
 
-        /* 卡片父容器：控制3D翻转 */
         .card-wrap {
             width: 100%;
             height: 350px;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
             cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            border-radius: 20px;
-            overflow: hidden;
         }
+        .card-wrap.flipped { transform: rotateY(180deg); }
 
-        /* 卡片翻转触发 */
-        .card-wrap.flipped {
-            transform: rotateY(180deg);
-        }
-
-        /* 卡片正面/背面通用样式 */
-        .card-front, .card-back {
+        .card-front,.card-back {
             position: absolute;
             width: 100%;
             height: 100%;
-            backface-visibility: hidden; /* 隐藏背面 */
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
-            color: white;
-            letter-spacing: 2px;
-            border-radius: 16px;
-        }
-
-        /* 卡片正面：马卡龙色系 */
-        .card1 .card-front { background: #FFC2E2; /* 马卡龙粉 */ }
-        .card2 .card-front { background: #B5EAD7; /* 马卡龙绿 */ }
-        .card3 .card-front { background: #CBCEFB; /* 马卡龙紫 */ }
-        .card4 .card-front { background: #FFDDAF; /* 马卡龙黄 */ }
-        .card5 .card-front { background: #99DDFF; /* 马卡龙蓝 */ }
-        .card6 .card-front { background: #FFB3BA; /* 马卡龙珊瑚红 */ }
-
-        /* 卡片正面文字颜色（对比色） */
-        .card1 .card-front { color: #A74F68; }
-        .card2 .card-front { color: #4F8A6D; }
-        .card3 .card-front { color: #5B5F97; }
-        .card4 .card-front { color: #977947; }
-        .card5 .card-front { color: #477B97; }
-        .card6 .card-front { color: #977951; }
-
-        /* 卡片背面：浅色系，统一样式 */
-        .card-back {
-            background: #fff8e8;
-            color: #a70f24;
-            transform: rotateY(180deg);
-            font-size: 28px;
-            text-align: center;
             padding: 20px;
+            font-size: 36px;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            backface-visibility: hidden;
         }
 
-        /* over按钮样式：马卡龙色系（综合调和色） */
-        .over-btn {
-            margin-top: 60px;
-            padding: 15px 40px;
-            background: linear-gradient(120deg, #FFC2E2, #B5EAD7, #CBCEFB);
-            border: none;
-            border-radius: 50px;
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 32px;
-            color: #5B5F97;
-            cursor: pointer;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-        .over-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
-        }
-
-        /* 弹窗遮罩层 */
-        .modal-mask {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-        }
-        /* 弹窗容器 */
-        .modal-container {
-            background: #fff8e8;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 500px;
-            padding: 30px;
-            text-align: center;
-        }
-        /* 弹窗标题 */
-        .modal-title {
-            font-size: 30px;
-            color: #a70f24;
-            margin-bottom: 20px;
-        }
-        /* 输入框样式 */
-        .modal-input {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #CBCEFB;
-            border-radius: 10px;
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 24px;
-            margin-bottom: 20px;
-            resize: none;
-            min-height: 120px;
-        }
-        /* 发送按钮 */
-        .send-btn {
-            padding: 10px 30px;
-            background: #FFDDAF;
-            border: none;
-            border-radius: 50px;
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 28px;
-            color: #977947;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .send-btn:hover {
-            background: #FFC2E2;
+        .card-front {
+            background: #FFC2D8;
             color: #A74F68;
         }
+        .card-back {
+            background: #FFF8E8;
+            color: #A70F24;
+            transform: rotateY(180deg);
+            text-align: center;
+            line-height:1.6;
+            font-size:28px;
+        }
 
-        /* 适配小屏幕 */
-        @media (max-width: 768px) {
-            .card-wrap {
-                height: 300px;
-            }
-            .card-front {
-                font-size: 30px;
-            }
-            .card-back {
-                font-size: 24px;
-            }
-            .over-btn {
-                font-size: 28px;
-                padding: 12px 30px;
-            }
-            .modal-title {
-                font-size: 26px;
-            }
-            .modal-input {
-                font-size: 20px;
-            }
+        .over-btn {
+            margin-top:60px;
+            padding:15px 42px;
+            background:linear-gradient(120deg,#FFC2D8,#D8C2F8);
+            border:none;
+            border-radius:50px;
+            font-family: inherit;
+            font-size:32px;
+            color:#5B5F97;
+            cursor:pointer;
+            box-shadow:0 8px 15px rgba(0,0,0,0.1);
+            transition:all 0.3s;
+        }
+        .over-btn:hover { transform: translateY(-5px); box-shadow:0 12px 20px rgba(0,0,0,0.15); }
+
+        .modal-mask {
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,0.5);
+            display:none;
+            align-items:center;
+            justify-content:center;
+            z-index:999;
+        }
+        .modal-box {
+            background:#FFF8E8;
+            width:90%;max-width:500px;
+            border-radius:22px;
+            padding:32px;
+            text-align:center;
+        }
+        .modal-title { font-size:30px;color:#a70f24;margin-bottom:22px; }
+        #modalInput {
+            width:80%;padding:14px 18px;
+            border:2px solid #FFC2D8;
+            border-radius:12px;
+            outline:none;font-size:20px;margin-bottom:22px;
+        }
+        #sendBtn {
+            padding:10px 32px;background:#FFDDAF;border:none;border-radius:50px;font-size:24px;color:#975927;cursor:pointer;
+        }
+
+        @media(max-width:768px){
+            .card-front,.card-back {font-size:28px;}
+            .card-back {font-size:22px;}
         }
     </style>
 </head>
 <body>
     <div class="cards-container">
-        <div class="card-wrap card1" data-url="card1-detail.html">
+        <div class="card-wrap card1" data-link="card1-detail.html">
             <div class="card-front">卡片 1</div>
             <div class="card-back">点击跳转<br>美食回忆录</div>
         </div>
-        <div class="card-wrap card2" data-url="card2-detail.html">
+        <div class="card-wrap card2" data-link="card2-detail.html">
             <div class="card-front">卡片 2</div>
-            <div class="card-back">点击跳转<br>十上成长记&&</div>
+            <div class="card-back">点击跳转<br>蕊蕊成长记</div>
         </div>
-        <div class="card-wrap card3" data-url="card3-detail.html">
+        <div class="card-wrap card3" data-link="card3-detail.html">
             <div class="card-front">卡片 3</div>
-            <div class="card-back">点击跳转<br>奶茶</div>
+            <div class="card-back">点击跳转<br>奶茶日常</div>
         </div>
-        <div class="card-wrap card4" data-url="card4-detail.html">
+        <div class="card-wrap card4" data-link="card4-detail.html">
             <div class="card-front">卡片 4</div>
-            <div class="card-back">点击跳转<br>帅哥</div>
+            <div class="card-back">点击跳转<br>帅哥合集</div>
         </div>
-        <div class="card-wrap card5" data-url="card5-detail.html">
+        <div class="card-wrap card5" data-link="card5-detail.html">
             <div class="card-front">卡片 5</div>
-            <div class="card-back">点击跳转<br>眼睛变化史</div>
+            <div class="card-back">点击跳转<br>眼睛成长史</div>
         </div>
-        <div class="card-wrap card6" data-url="card6-detail.html">
+        <div class="card-wrap card6" data-link="card6-detail.html">
             <div class="card-front">卡片 6</div>
             <div class="card-back">点击跳转<br>新年快乐</div>
         </div>
     </div>
+    <button class="over-btn" id="overBtn">over</button>
 
-    <button class="over-btn">over</button>
-
-    <div class="modal-mask">
-        <div class="modal-container">
+    <div class="modal-mask" id="mask">
+        <div class="modal-box">
             <div class="modal-title">告诉我你密码的含义吧？</div>
-            <textarea class="modal-input" placeholder="请输入密码的含义..."></textarea>
-            <button class="send-btn">发送</button>
+            <input type="text" id="modalInput" placeholder="输入内容...">
+            <br>
+            <button id="sendBtn">发送</button>
         </div>
     </div>
 
-    <script>
-        const cardWraps = document.querySelectorAll('.card-wrap');
-        const overBtn = document.querySelector('.over-btn');
-        const modalMask = document.querySelector('.modal-mask');
-        const modalInput = document.querySelector('.modal-input');
-        const sendBtn = document.querySelector('.send-btn');
+<script>
+const cardWraps = document.querySelectorAll('.card-wrap');
+const overBtn = document.getElementById('overBtn');
+const mask = document.getElementById('mask');
+const sendBtn = document.getElementById('sendBtn');
+const modalInput = document.getElementById('modalInput');
 
-        cardWraps.forEach(card => {
-            card.addEventListener('click', function() {
-                this.classList.add('flipped');
-                setTimeout(() => {
-                    const targetUrl = this.getAttribute('data-url');
-                    window.location.href = targetUrl;
-                }, 800);
-            });
-        });
+//卡片翻转跳转
+cardWraps.forEach(item=>{
+    item.addEventListener('click',()=>{
+        item.classList.add('flipped');
+        setTimeout(()=>{
+            location.href = item.dataset.link;
+        },800)
+    })
+})
 
-        overBtn.addEventListener('click', function() {
-            modalMask.style.display = 'flex';
-        });
+overBtn.onclick = ()=> mask.style.display = 'flex';
+mask.onclick = e=>{if(e.target===mask)mask.style.display='none';}
 
-        // ==============================================
-        // 🔥 核心：发送后自动把内容发到你能看到的地方
-        // ==============================================
-        sendBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const text = modalInput.value.trim();
+//云端保存，跨设备读取
+async function savePwd(text){
+    await fetch("https://jsonblob.com/api/jsonBlob/1373012921135198208",{
+        method:"PUT",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({content:text,time:new Date().toLocaleString()})
+    })
+}
+//你的查询指令
+window.getPwd = async function(){
+    let res = await fetch("https://jsonblob.com/api/jsonBlob/1373012921135198208");
+    let d = await res.json();
+    console.log("🔐密码含义：",d.content,"⏰提交时间：",d.time);
+}
 
-            if (!text) {
-                alert('请输入内容！');
-                return;
-            }
-
-            // ✅ 自动把内容显示在你控制台里（你一定能看到）
-            console.log("======================");
-            console.log("她写的密码含义：", text);
-            console.log("======================");
-
-            alert('发送成功啦！');
-            window.location.href = 'index.html';
-        });
-
-        modalMask.addEventListener('click', function(e) {
-            if (e.target === modalMask) {
-                modalMask.style.display = 'none';
-            }
-        });
-    </script>
+sendBtn.addEventListener('click',async function(e){
+    e.stopPropagation();
+    let val = modalInput.value.trim();
+    if(!val){alert("请填写内容");return;}
+    await savePwd(val);
+    localStorage.setItem("pwdMean",val);
+    alert("发送成功！");
+    mask.style.display = "none";
+    modalInput.value = "";
+})
+</script>
 </body>
 </html>
