@@ -10,7 +10,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #f5f0e6;
-            background-image: url("image/微信图片_20260201011724_549_2.jpg"); /* 与index.html背景一致 */
+            background-image: url("微信图片_20260201011724_549_2.jpg"); /* 与index.html背景一致 */
             background-blend-mode: overlay;
             background-size: cover;
             background-position: center;
@@ -208,7 +208,7 @@
             <div class="card-back">点击跳转<br>十上成长记&&</div>
         </div>
         <!-- 卡片3 -->
-        <div class="card-wrap card3" data-url="card3-detail .html">
+        <div class="card-wrap card3" data-url="card3-detail.html">
             <div class="card-front">卡片 3</div>
             <div class="card-back">点击跳转<br>奶茶</div>
         </div>
@@ -270,23 +270,21 @@
         });
 
         // 点击发送按钮处理逻辑
-        sendBtn.addEventListener('click', function() {
-            // 1. 获取输入的密码含义（这里可根据需求发送到服务器/存储，示例仅打印到控制台）
+        sendBtn.addEventListener('click', function(e) {
+            e.stopPropagation(); // 🔥 修复BUG：阻止事件冒泡
             const passwordMeaning = modalInput.value.trim();
+            
             if (passwordMeaning) {
-                console.log('密码的含义：', passwordMeaning); // 你可以在控制台查看，或对接后端接口发送
-                
-                // 2. 跳转到主界面，并传递退出成功的提示
-                const mainUrl = 'D:\\website\\index.html'; // 本地路径，若部署到服务器需改为相对/绝对URL
-                // 用URL参数传递提示信息
-                const redirectUrl = `${mainUrl}?exitTip=张蕊，退出成功！`;
-                window.location.href = redirectUrl;
+                // 🔥 保存到本地，你可以随时查看
+                localStorage.setItem('pwdMean', passwordMeaning);
+                alert('发送成功！');
+                window.location.href = 'index.html';
             } else {
                 alert('请输入密码的含义后再发送！');
             }
         });
 
-        // 可选：点击弹窗遮罩层关闭弹窗（增强体验）
+        // 点击弹窗外部关闭
         modalMask.addEventListener('click', function(e) {
             if (e.target === modalMask) {
                 modalMask.style.display = 'none';
