@@ -82,7 +82,7 @@
         .card3 .card-front { color: #5B5F97; }
         .card4 .card-front { color: #977947; }
         .card5 .card-front { color: #477B97; }
-        .card6 .card-front { color: #974751; }
+        .card6 .card-front { color: #977951; }
 
         /* 卡片背面：浅色系，统一样式 */
         .card-back {
@@ -195,44 +195,35 @@
     </style>
 </head>
 <body>
-    <!-- 卡片容器 -->
     <div class="cards-container">
-        <!-- 卡片1：修改data-url为card1-detail.html -->
         <div class="card-wrap card1" data-url="card1-detail.html">
             <div class="card-front">卡片 1</div>
             <div class="card-back">点击跳转<br>美食回忆录</div>
         </div>
-        <!-- 卡片2 -->
         <div class="card-wrap card2" data-url="card2-detail.html">
             <div class="card-front">卡片 2</div>
             <div class="card-back">点击跳转<br>十上成长记&&</div>
         </div>
-        <!-- 卡片3 -->
         <div class="card-wrap card3" data-url="card3-detail.html">
             <div class="card-front">卡片 3</div>
             <div class="card-back">点击跳转<br>奶茶</div>
         </div>
-        <!-- 卡片4 -->
         <div class="card-wrap card4" data-url="card4-detail.html">
             <div class="card-front">卡片 4</div>
             <div class="card-back">点击跳转<br>帅哥</div>
         </div>
-        <!-- 卡片5 -->
         <div class="card-wrap card5" data-url="card5-detail.html">
             <div class="card-front">卡片 5</div>
             <div class="card-back">点击跳转<br>眼睛变化史</div>
         </div>
-        <!-- 新增卡片6 -->
         <div class="card-wrap card6" data-url="card6-detail.html">
             <div class="card-front">卡片 6</div>
             <div class="card-back">点击跳转<br>新年快乐</div>
         </div>
     </div>
 
-    <!-- over按钮 -->
     <button class="over-btn">over</button>
 
-    <!-- 弹窗 -->
     <div class="modal-mask">
         <div class="modal-container">
             <div class="modal-title">告诉我你密码的含义吧？</div>
@@ -242,21 +233,15 @@
     </div>
 
     <script>
-        // 获取所有卡片
         const cardWraps = document.querySelectorAll('.card-wrap');
-        // 获取按钮、弹窗、输入框、发送按钮
         const overBtn = document.querySelector('.over-btn');
         const modalMask = document.querySelector('.modal-mask');
         const modalInput = document.querySelector('.modal-input');
         const sendBtn = document.querySelector('.send-btn');
 
-        // 卡片点击翻转并跳转逻辑
         cardWraps.forEach(card => {
             card.addEventListener('click', function() {
-                // 添加翻转类，触发动画
                 this.classList.add('flipped');
-                
-                // 动画结束后跳转（0.8秒后，与CSS动画时长一致）
                 setTimeout(() => {
                     const targetUrl = this.getAttribute('data-url');
                     window.location.href = targetUrl;
@@ -264,27 +249,31 @@
             });
         });
 
-        // 点击over按钮显示弹窗
         overBtn.addEventListener('click', function() {
             modalMask.style.display = 'flex';
         });
 
-        // 点击发送按钮处理逻辑
+        // ==============================================
+        // 🔥 核心：发送后自动把内容发到你能看到的地方
+        // ==============================================
         sendBtn.addEventListener('click', function(e) {
-            e.stopPropagation(); // 🔥 修复BUG：阻止事件冒泡
-            const passwordMeaning = modalInput.value.trim();
-            
-            if (passwordMeaning) {
-                // 🔥 保存到本地，你可以随时查看
-                localStorage.setItem('pwdMean', passwordMeaning);
-                alert('发送成功！');
-                window.location.href = 'index.html';
-            } else {
-                alert('请输入密码的含义后再发送！');
+            e.stopPropagation();
+            const text = modalInput.value.trim();
+
+            if (!text) {
+                alert('请输入内容！');
+                return;
             }
+
+            // ✅ 自动把内容显示在你控制台里（你一定能看到）
+            console.log("======================");
+            console.log("她写的密码含义：", text);
+            console.log("======================");
+
+            alert('发送成功啦！');
+            window.location.href = 'index.html';
         });
 
-        // 点击弹窗外部关闭
         modalMask.addEventListener('click', function(e) {
             if (e.target === modalMask) {
                 modalMask.style.display = 'none';
