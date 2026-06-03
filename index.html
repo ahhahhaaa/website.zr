@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026新年祝福 | 奔赴美好</title>
+    <style>
+        /* 引入手写风格字体 */
+        @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #f5f0e6;
+            background-image: url("image/微信图片_20260201005737_548_2.jpg");
+            background-blend-mode: overlay;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+            font-family: 'Ma Shan Zheng', cursive;
+            transition: all 0.5s ease;
+            position: relative;
+        }
+
+        /* 卡通贴纸样式 - 浮动动画+hover效果 */
+        .cartoon-item {
+            position: absolute;
+            z-index: 5;
+            height: auto;
+            pointer-events: auto;
+            cursor: pointer;
+            animation: float 3s ease-in-out infinite alternate;
+            transition: transform 0.2s ease;
+        }
+        .cartoon-item:hover {
+            transform: scale(1.05);
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-15px); }
+        }
+        /* 6个卡通贴纸位置定位 */
+        .cartoon-1 {
+            top: 60px;
+            left: 60px;
+            width: 120px;
+            animation-delay: 0s;
+        }
+        .cartoon-2 {
+            top: 20px;
+            right: 60px;
+            width: 100px;
+            animation-delay: 0.5s;
+        }
+        .cartoon-3 {
+            bottom: 50px;
+            left: 70px;
+            width: 150px;
+            animation-delay: 1s;
+        }
+        .cartoon-4 {
+            bottom: 40px;
+            right: 70px;
+            width: 110px;
+            animation-delay: 1.5s;
+        }
+        .cartoon-5 {
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            animation-delay: 2s;
+        }
+        .cartoon-6 {
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            animation-delay: 2.5s;
+        }
+
+        /* 主页面核心容器样式 - 磨砂玻璃+金色边框 */
+        .container {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(8px);
+            padding: 80px 50px;
+            border-radius: 24px;
+            box-shadow: 
+                0 15px 30px rgba(0,0,0,0.08),
+                inset 0 0 20px rgba(255, 255, 255, 0.25);
+            text-align: center;
+            max-width: 700px;
+            width: 100%;
+            border: 10px solid rgba(240, 230, 210, 0.75);
+            position: relative;
+            z-index: 10;
+            opacity: 0;
+            animation: fadeIn 4s ease forwards;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* 主标题文字样式 */
+        .title {
+            font-size: 36px;
+            color: #a70f24;
+            line-height: 2;
+            margin-bottom: 60px;
+            text-shadow: 2px 2px 3px rgba(0,0,0,0.08);
+            letter-spacing: 2px;
+        }
+
+        /* 按钮容器 */
+        .btn-group {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* 通用按钮样式 - 渐变红+金色边框+点击效果 */
+        .btn {
+            padding: 20px 50px;
+            font-size: 26px;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            min-width: 200px;
+            font-family: 'Ma Shan Zheng', cursive;
+            background: linear-gradient(90deg, #c8102e 0%, #d1213b 100%);
+            border: 4px solid #e8c850;
+            box-shadow: 
+                0 8px 0 #a70f24,
+                0 10px 15px rgba(0,0,0,0.08);
+        }
+        .btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #b70e29 0%, #c8102e 100%);
+            box-shadow: 
+                0 8px 0 #960d20,
+                0 10px 15px rgba(0,0,0,0.1);
+        }
+        .btn:active {
+            transform: translateY(8px);
+            box-shadow: 
+                0 0 0 #960d20,
+                0 5px 10px rgba(0,0,0,0.08);
+        }
+
+        /* 「我才不要」弹窗样式 - 磨砂玻璃+淡入淡出 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 60px 40px;
+            border-radius: 24px;
+            box-shadow: 
+                0 15px 30px rgba(0,0,0,0.15),
+                inset 0 0 20px rgba(255, 255, 255, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            border: 8px solid rgba(240, 230, 210, 0.8);
+        }
+        .modal-text {
+            font-size: 32px;
+            color: #a70f24;
+            margin-bottom: 40px;
+            line-height: 1.8;
+            text-shadow: 2px 2px 3px rgba(0,0,0,0.08);
+        }
+
+        /* 页面淡出动画（卡通图片跳转用） */
+        body.fade-out {
+            opacity: 0;
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <!-- 6个卡通贴纸 - 分别跳转到page1-page6.html -->
+    <img src="image/1.png" class="cartoon-item cartoon-1" alt="卡通元素1" onclick="navigateTo('page1.html')">
+    <img src="image/2.png" class="cartoon-item cartoon-2" alt="卡通元素2" onclick="navigateTo('page2.html')">
+    <img src="image/3.png" class="cartoon-item cartoon-3" alt="卡通元素3" onclick="navigateTo('page3.html')">
+    <img src="image/4.png" class="cartoon-item cartoon-4" alt="卡通元素4" onclick="navigateTo('page4.html')">
+    <img src="image/5.png" class="cartoon-item cartoon-5" alt="卡通元素5" onclick="navigateTo('page5.html')">
+    <img src="image/微信图片_20260201003432_540_2.png" class="cartoon-item cartoon-6" alt="卡通元素6" onclick="navigateTo('page6.html')">
+
+    <!-- 主页面核心内容 - 标题+两个按钮 -->
+    <div class="container">
+        <div class="title">2025年结束啦！<br>你想和我一起奔赴2026嘛？</div>
+        <div class="btn-group">
+            <!-- 那还用说：直接跳转独立登录页login.html -->
+            <button class="btn btn-yes" onclick="window.location.href='login.html'">那还用说</button>
+            <!-- 我才不要：触发弹窗逻辑 -->
+            <button class="btn btn-no" onclick="handleNoClick()">我才不要！</button>
+        </div>
+    </div>
+
+    <!-- 「我才不要」弹窗容器（默认隐藏） -->
+    <div class="modal" id="noModal">
+        <div class="modal-content">
+            <p class="modal-text" id="modalText">你确定？</p>
+            <button class="btn back-btn" onclick="closeModal()">Back</button>
+        </div>
+    </div>
+
+    <script>
+        // 初始化「我才不要」点击次数（刷新页面自动重置）
+        let noClickCount = 0;
+        // 获取弹窗元素
+        const modal = document.getElementById('noModal');
+        const modalText = document.getElementById('modalText');
+
+        // 卡通图片跳转方法 - 带淡出动画
+        function navigateTo(url) {
+            document.body.classList.add('fade-out');
+            setTimeout(() => {
+                window.location.href = url;
+            }, 500);
+        }
+
+        // 「我才不要」点击逻辑 - 3次及以上固定显示gun🫶
+        function handleNoClick() {
+            noClickCount++;
+            // 根据点击次数切换弹窗文本
+            if (noClickCount === 1) {
+                modalText.textContent = '你确定？';
+            } else if (noClickCount === 2) {
+                modalText.textContent = '给你脸了？🙂';
+            } else if (noClickCount >= 3) {
+                modalText.textContent = 'gun🫶';
+            }
+            // 显示弹窗
+            modal.classList.add('active');
+        }
+
+        // 关闭「我才不要」弹窗
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        // 页面加载初始化 - 重置点击次数+移除淡出动画
+        window.onload = function() {
+            document.body.classList.remove('fade-out');
+            noClickCount = 0;
+        };
+    </script>
+</body>
+</html>
