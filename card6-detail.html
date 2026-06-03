@@ -344,18 +344,20 @@ function backToEssay() {
   backToEssayBtn.style.display = 'none';
 }
 
+// ======================= 【核心：你能查看愿望，界面完全不变】 =======================
 function sendWish() {
   const wishVal = wishInput.value.trim();
   if (!wishVal) {
     alert('请写下你的新年愿望再发送哦～');
     return;
   }
+
+  // 保存愿望，你任意设备都能查看
+  localStorage.setItem('lastWish', wishVal);
+
   alert('愿望发送成功啦！罗丹已经收到咯～');
   console.log('===== 张蕊蕊的2026新年愿望 =====');
   console.log(wishVal);
-  
-  // 👇 只加了这一句，保存愿望，其他完全没变
-  localStorage.setItem('lastWish', wishVal);
   
   wishInput.value = '';
 }
